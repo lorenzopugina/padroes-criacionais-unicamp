@@ -1,14 +1,13 @@
 package br.unicamp.padroescriacionais.legacy.service;
 
+import java.time.LocalDateTime;
+
 import br.unicamp.padroescriacionais.legacy.domain.ConfiguracaoSistema;
 import br.unicamp.padroescriacionais.legacy.domain.FormatoRelatorio;
 import br.unicamp.padroescriacionais.legacy.domain.Relatorio;
 import br.unicamp.padroescriacionais.legacy.domain.TipoRelatorio;
-import br.unicamp.padroescriacionais.legacy.generator.CsvRelatorioGenerator;
-import br.unicamp.padroescriacionais.legacy.generator.JsonRelatorioGenerator;
-import br.unicamp.padroescriacionais.legacy.generator.PdfRelatorioGenerator;
-
-import java.time.LocalDateTime;
+import br.unicamp.padroescriacionais.legacy.factory.RelatorioGeneratorFactory;
+import br.unicamp.padroescriacionais.legacy.generator.RelatorioGenerator;
 
 public class RelatorioService {
 
@@ -18,6 +17,8 @@ public class RelatorioService {
             "/tmp/relatorios",
             false
     );
+
+    private final RelatorioGeneratorFactory generatorFactory = new RelatorioGeneratorFactory();
 
     public Relatorio criarRelatorio(TipoRelatorio tipo) {
         String titulo;
@@ -50,18 +51,8 @@ public class RelatorioService {
             System.out.println("[DEBUG-RelatorioService] Gerando: " + tipo + " -> " + formato);
         }
 
-        if (formato == FormatoRelatorio.PDF) {
-            PdfRelatorioGenerator generator = new PdfRelatorioGenerator();
-            return generator.gerar(relatorio);
-        } else if (formato == FormatoRelatorio.CSV) {
-            CsvRelatorioGenerator generator = new CsvRelatorioGenerator();
-            return generator.gerar(relatorio);
-        } else if (formato == FormatoRelatorio.JSON) {
-            JsonRelatorioGenerator generator = new JsonRelatorioGenerator();
-            return generator.gerar(relatorio);
-        } else {
-            throw new IllegalArgumentException("Formato desconhecido: " + formato);
-        }
+        RelatorioGenerator generator = generatorFactory.criar(formato);
+        return generator.gerar(relatorio);
     }
 
     private String gerarConteudoVendas() {
