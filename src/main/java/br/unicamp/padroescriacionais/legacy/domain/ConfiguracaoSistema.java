@@ -2,18 +2,32 @@ package br.unicamp.padroescriacionais.legacy.domain;
 
 public class ConfiguracaoSistema {
 
+    public static ConfiguracaoSistema instancia = null;
+
     private String nomeEmpresa;
     private String ambiente;
     private String diretorioExportacao;
     private boolean debugAtivo;
 
-    public ConfiguracaoSistema(String nomeEmpresa, String ambiente,
+    private ConfiguracaoSistema(String nomeEmpresa, String ambiente,
                                String diretorioExportacao, boolean debugAtivo) {
         this.nomeEmpresa = nomeEmpresa;
         this.ambiente = ambiente;
         this.diretorioExportacao = diretorioExportacao;
         this.debugAtivo = debugAtivo;
     }
+
+    public static ConfiguracaoSistema getInstance() {
+        if (instancia == null) {
+            instancia = new ConfiguracaoSistema(
+                "Empresa XPTO Ltda.",
+                "DEV",
+                "/tmp/relatorios",
+                true
+            );
+        }
+        return instancia;
+      }
 
     public String getNomeEmpresa() {
         return nomeEmpresa;
