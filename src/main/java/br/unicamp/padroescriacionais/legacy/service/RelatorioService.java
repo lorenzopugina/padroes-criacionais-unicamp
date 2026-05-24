@@ -11,13 +11,6 @@ import br.unicamp.padroescriacionais.legacy.generator.RelatorioGenerator;
 
 public class RelatorioService {
 
-    private ConfiguracaoSistema configuracao = new ConfiguracaoSistema(
-            "Empresa XPTO",
-            "DEV",
-            "/tmp/relatorios",
-            false
-    );
-
     private final RelatorioGeneratorFactory generatorFactory = new RelatorioGeneratorFactory();
 
     public Relatorio criarRelatorio(TipoRelatorio tipo) {
@@ -47,7 +40,7 @@ public class RelatorioService {
     public String gerarRelatorio(TipoRelatorio tipo, FormatoRelatorio formato) {
         Relatorio relatorio = criarRelatorio(tipo);
 
-        if (configuracao.isDebugAtivo()) {
+        if (ConfiguracaoSistema.getInstance().isDebugAtivo()) {
             System.out.println("[DEBUG-RelatorioService] Gerando: " + tipo + " -> " + formato);
         }
 

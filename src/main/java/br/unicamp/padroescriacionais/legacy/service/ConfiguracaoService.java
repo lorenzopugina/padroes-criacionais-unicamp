@@ -4,18 +4,13 @@ import br.unicamp.padroescriacionais.legacy.domain.ConfiguracaoSistema;
 
 public class ConfiguracaoService {
 
-    private ConfiguracaoSistema configuracao = new ConfiguracaoSistema(
-            "Empresa XPTO Ltda.",
-            "DEV",
-            "/tmp/relatorios",
-            true
-    );
-
     public ConfiguracaoSistema getConfiguracao() {
-        return configuracao;
+        return ConfiguracaoSistema.getInstance();
     }
 
     public void exibirConfiguracao() {
+        ConfiguracaoSistema configuracao = ConfiguracaoSistema.getInstance();
+
         System.out.println("=== Configuracao do Sistema ===");
         System.out.println("Empresa    : " + configuracao.getNomeEmpresa());
         System.out.println("Ambiente   : " + configuracao.getAmbiente());

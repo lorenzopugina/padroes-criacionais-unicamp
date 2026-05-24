@@ -8,12 +8,6 @@ import br.unicamp.padroescriacionais.legacy.generator.RelatorioGenerator;
 
 public class ExportacaoService {
 
-    private ConfiguracaoSistema configuracao = new ConfiguracaoSistema(
-            "Empresa XPTO Ltda.",
-            "PROD",
-            "/var/exports/relatorios",
-            false
-    );
 
     private final RelatorioGeneratorFactory generatorFactory = new RelatorioGeneratorFactory();
 
@@ -21,12 +15,13 @@ public class ExportacaoService {
 
         RelatorioGenerator generator = generatorFactory.criar(formato);
         String conteudoFormatado = generator.gerar(relatorio);
-
+        
         String nomeArquivo = relatorio.getTitulo()
-                .replace(" ", "_")
-                .toLowerCase()
-                + "." + formato.name().toLowerCase();
-
+        .replace(" ", "_")
+        .toLowerCase()
+        + "." + formato.name().toLowerCase();
+        
+        ConfiguracaoSistema configuracao = ConfiguracaoSistema.getInstance();
         String caminhoCompleto = configuracao.getDiretorioExportacao() + "/" + nomeArquivo;
 
         System.out.println("[EXPORTACAO] Empresa  : " + configuracao.getNomeEmpresa());
