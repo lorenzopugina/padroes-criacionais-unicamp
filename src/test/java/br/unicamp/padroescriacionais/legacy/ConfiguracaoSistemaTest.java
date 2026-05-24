@@ -1,77 +1,74 @@
 package br.unicamp.padroescriacionais.legacy;
 
-import br.unicamp.padroescriacionais.legacy.domain.ConfiguracaoSistema;
-import br.unicamp.padroescriacionais.legacy.service.ConfiguracaoService;
-import org.junit.jupiter.api.Test;
+  import br.unicamp.padroescriacionais.legacy.domain.ConfiguracaoSistema;
+  import br.unicamp.padroescriacionais.legacy.service.ConfiguracaoService;
+  import org.junit.jupiter.api.BeforeEach;
+  import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+  import java.lang.reflect.Field;
 
-class ConfiguracaoSistemaTest {
+  import static org.junit.jupiter.api.Assertions.*;
 
-    @Test
-    void deveCriarConfiguracaoComValoresInformados() {
-        ConfiguracaoSistema config = new ConfiguracaoSistema(
-                "Empresa Teste",
-                "DEV",
-                "/tmp/test",
-                true
-        );
+  class ConfiguracaoSistemaTest {
 
-        assertEquals("Empresa Teste", config.getNomeEmpresa());
-        assertEquals("DEV", config.getAmbiente());
-        assertEquals("/tmp/test", config.getDiretorioExportacao());
-        assertTrue(config.isDebugAtivo());
-    }
+      @BeforeEach
+      void resetarSingleton() throws Exception {
+          Field instancia = ConfiguracaoSistema.class.getDeclaredField("instancia");
+          instancia.setAccessible(true);
+          instancia.set(null, null);
+      }
 
-    @Test
-    void devePermitirAlteracaoDeAmbiente() {
-        ConfiguracaoSistema config = new ConfiguracaoSistema("Empresa", "DEV", "/tmp", false);
-        config.setAmbiente("PROD");
+      @Test
+      void deveRetornarInstanciaNaoNula() {
+          assertNotNull(ConfiguracaoSistema.getInstance());
+      }
 
-        assertEquals("PROD", config.getAmbiente());
-    }
+      @Test
+      void deveRetornarSempreAMesmaInstancia() {
+          ConfiguracaoSistema a = ConfiguracaoSistema.getInstance();
+          ConfiguracaoSistema b = ConfiguracaoSistema.getInstance();
 
-    @Test
-    void devePermitirAlteracaoDeDebug() {
-        ConfiguracaoSistema config = new ConfiguracaoSistema("Empresa", "DEV", "/tmp", false);
-        config.setDebugAtivo(true);
+          assertSame(a, b);
+      }
 
-        assertTrue(config.isDebugAtivo());
-    }
+      @Test
+      void devePermitirAlteracaoDeAmbiente() {
+          ConfiguracaoSistema config = ConfiguracaoSistema.getInstance();
+          config.setAmbiente("PROD");
 
-    @Test
-    void devePermitirAlteracaoDeDiretorio() {
-        ConfiguracaoSistema config = new ConfiguracaoSistema("Empresa", "DEV", "/tmp", false);
-        config.setDiretorioExportacao("/novo/diretorio");
+          assertEquals("PROD", config.getAmbiente());
+      }
 
-        assertEquals("/novo/diretorio", config.getDiretorioExportacao());
-    }
+      @Test
+      void devePermitirAlteracaoDeDebug() {
+          ConfiguracaoSistema config = ConfiguracaoSistema.getInstance();
+          config.setDebugAtivo(true);
 
-    @Test
-    void duasInstanciasIndependentesPodemTerAmbientesDiferentes() {
-        ConfiguracaoSistema configDev = new ConfiguracaoSistema("Empresa", "DEV", "/tmp", true);
-        ConfiguracaoSistema configProd = new ConfiguracaoSistema("Empresa", "PROD", "/exports", false);
+          assertTrue(config.isDebugAtivo());
+      }
 
-        assertNotEquals(configDev.getAmbiente(), configProd.getAmbiente());
-        assertNotEquals(configDev.getDiretorioExportacao(), configProd.getDiretorioExportacao());
-        assertNotEquals(configDev.isDebugAtivo(), configProd.isDebugAtivo());
-    }
+      @Test
+      void devePermitirAlteracaoDeDiretorio() {
+          ConfiguracaoSistema config = ConfiguracaoSistema.getInstance();
+          config.setDiretorioExportacao("/novo/diretorio");
 
-    @Test
-    void alteracaoEmUmaInstanciaNaoAfetaOutra() {
-        ConfiguracaoSistema config1 = new ConfiguracaoSistema("Empresa", "DEV", "/tmp", false);
-        ConfiguracaoSistema config2 = new ConfiguracaoSistema("Empresa", "DEV", "/tmp", false);
+          assertEquals("/novo/diretorio", config.getDiretorioExportacao());
+      }
 
-        config1.setAmbiente("PROD");
+      @Test
+      void alteracaoNaInstanciaDeveSerVisivelEmOutrasReferencias() {
+          ConfiguracaoSistema config1 = ConfiguracaoSistema.getInstance();
+          ConfiguracaoSistema config2 = ConfiguracaoSistema.getInstance();
 
-        assertEquals("PROD", config1.getAmbiente());
-        assertEquals("DEV", config2.getAmbiente());
-    }
+          config1.setAmbiente("PROD");
 
-    @Test
-    void configuracaoServiceDeveRetornarConfiguracaoNaoNula() {
-        ConfiguracaoService service = new ConfiguracaoService();
-        assertNotNull(service.getConfiguracao());
-        assertFalse(service.getConfiguracao().getNomeEmpresa().isBlank());
-    }
-}
+          assertEquals("PROD", config2.getAmbiente());
+      }
+
+      @Test
+      void configuracaoServiceDeveRetornarConfiguracaoNaoNula() {
+          ConfiguracaoService service = new ConfiguracaoService();
+          assertNotNull(service.getConfiguracao());
+          assertFalse(service.getConfiguracao().getNomeEmpresa().isBlank());
+      }
+  }

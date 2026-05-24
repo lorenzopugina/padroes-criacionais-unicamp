@@ -101,4 +101,24 @@ class RelatorioServiceTest {
         String resultado = service.gerarRelatorio(TipoRelatorio.VENDAS, FormatoRelatorio.PDF);
         assertTrue(resultado.contains("Vendas"), "Saida PDF deve mencionar o titulo do relatorio");
     }
+
+    @Test
+    void deveGerarConteudoXmlComTags() {
+        String resultado = service.gerarRelatorio(TipoRelatorio.VENDAS, FormatoRelatorio.XML);
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isBlank());
+        assertTrue(resultado.contains("<relatorio>"), "Saida XML deve conter tag <relatorio>");
+        assertTrue(resultado.contains("</relatorio>"), "Saida XML deve conter tag </relatorio>");
+    }
+
+    @Test
+    void deveGerarConteudoHtmlComEstrutura() {
+        String resultado = service.gerarRelatorio(TipoRelatorio.VENDAS, FormatoRelatorio.HTML);
+
+        assertNotNull(resultado);
+        assertFalse(resultado.isBlank());
+        assertTrue(resultado.contains("<html"), "Saida HTML deve conter tag <html>");
+        assertTrue(resultado.contains("</html>"), "Saida HTML deve conter tag </html>");
+    }
 }
